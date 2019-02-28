@@ -6,6 +6,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
+    private static PrintWriter controllerOut;
+    private static PrintWriter uavOut;
     //Compile to bytecode version 8
     //To get it to run on linux, type: java -cp AutopilotCloudServer.jar Server
     /**
@@ -27,8 +29,6 @@ public class Server {
 
     private static class Client implements Runnable {
         private Socket socket;
-        private PrintWriter controllerOut;
-        private PrintWriter uavOut;
 
         Client(Socket socket) {
             this.socket = socket;
@@ -43,26 +43,27 @@ public class Server {
                 String line = "";
 
                 while (true) {
-                    line = in.readLine();
-                    //System.out.println("Recieved: " + line + " from: " + socket);
-                    System.out.println(line);
-                    if(line.equals("client"))
-                    {
-                        System.out.println("Controller Accepted!");
-                        out.println("Connection Accepted!");
-                        controllerOut = out;
-                        controller(in);
-                    }
-                    if(line.equals("UAV"))
-                    {
-                        System.out.println("UAV Accepted!");
-                        out.println("Connection Accepted!");
-                        uavOut = out;
-                        uav(in);
+                    if(line != null) {
+                        line = in.readLine();
+                        //System.out.println("Recieved: " + line + " from: " + socket);
+                        System.out.println(line);
+                        if (line.equals("client")) {
+                            System.out.println("Controller Accepted!");
+                            out.println("Connection Accepted!");
+                            controllerOut = out;
+                            controller(in);
+                        }
+                        if (line.equals("UAV")) {
+                            System.out.println("UAV Accepted!");
+                            out.println("Connection Accepted!");
+                            uavOut = out;
+                            uav(in);
+                        }
                     }
                 }
             } catch (Exception e) {
                 System.out.println("Error:" + socket);
+                e.printStackTrace();
             } finally {
                 try { socket.close(); } catch (IOException e) {}
                 System.out.println("Closed: " + socket);
@@ -74,8 +75,11 @@ public class Server {
             while(!line.equals("end"))
             {
                 line = in.readLine();
-                System.out.println("Recieved: \"" + line + "\" from the conroller client");
-                uavOut.println(in.readLine());
+                if(line != null)
+                {
+                    System.out.println("Recieved: \"" + line + "\" from the conroller client");
+                    uavOut.println(line);
+                }
             }
         }
 
@@ -84,8 +88,11 @@ public class Server {
             while(!line.equals("end"))
             {
                 line = in.readLine();
-                System.out.println("Recieved: \"" + line + "\" from the conroller client");
-                controllerOut.println(line);
+                if(line != null)
+                {
+                    System.out.println("Recieved: \"" + line + "\" from the conroller client");
+                    controllerOut.println(line);
+                }
             }
         }
     }
