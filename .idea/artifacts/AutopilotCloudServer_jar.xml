@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="AutopilotCloudServer:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/AutopilotCloudServer_jar</output-path>
+    <root id="archive" name="AutopilotCloudServer.jar">
+      <element id="module-output" name="AutopilotCloudServer" />
+    </root>
+  </artifact>
+</component>
